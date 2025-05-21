@@ -43,6 +43,7 @@ erDiagram
   String id PK
   String name UK
   String slug UK
+  String description "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -108,6 +109,7 @@ erDiagram
   - `id`: 
   - `name`: 
   - `slug`: 
+  - `description`: 
   - `createdAt`: 
   - `updatedAt`: 
 
