@@ -1,7 +1,7 @@
-import { PrismaD1 } from "@prisma/adapter-d1";
-import { PrismaClient } from "../generated/prisma/client";
-import type { Article } from "../generated/prisma/client";
-import { createId } from "@paralleldrive/cuid2";
+import { createId } from '@paralleldrive/cuid2';
+import { PrismaD1 } from '@prisma/adapter-d1';
+import { PrismaClient } from '../generated/prisma/client';
+import type { Article } from '../generated/prisma/client';
 export class ContentsService {
   private prisma: PrismaClient;
 
@@ -70,7 +70,7 @@ export class ContentsService {
       where: { id },
     });
     if (!content) {
-      throw new Error("Content not found");
+      throw new Error('Content not found');
     }
     return content;
   }
