@@ -1,14 +1,45 @@
 {
-	"name": "mizphses-website-backend",
-	"scripts": {
-		"dev": "wrangler dev",
-		"deploy": "wrangler deploy --minify",
-		"cf-typegen": "wrangler types --env-interface CloudflareBindings"
-	},
-	"dependencies": {
-		"hono": "^4.7.10"
-	},
-	"devDependencies": {
-		"wrangler": "^4.16.0"
-	}
+  "name": "mizphses-website-backend",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
+    "fix": "run-p fix:*",
+    "fix:biome": "biome check --write .",
+    "fix:prisma": "prisma format",
+    "type-check": "tsc --noEmit",
+    "migration:create": "wrangler d1 migrations create DB",
+    "migration:write-init": "prisma migrate diff --script --from-empty --to-schema-datamodel ./prisma/schema.prisma --output",
+    "migration:write": "prisma migrate diff --script --from-local-d1 --to-schema-datamodel ./prisma/schema.prisma --output",
+    "migrate:dev": "wrangler d1 migrations apply DB --local",
+    "migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "gen": "run-p gen:*",
+    "gen:cloudflare-types": "wrangler types --env-interface CloudflareBindings",
+    "gen:prisma": "prisma generate",
+    "prepare:husky": "husky",
+    "prepare": "run-p prepare:* gen:prisma"
+  },
+  "dependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@prisma/adapter-d1": "^6.8.2",
+    "@prisma/client": "^6.8.2",
+    "bcryptjs": "^3.0.2",
+    "hono": "^4.7.10",
+    "jose": "^6.0.11",
+    "rfc4648": "^1.5.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250521.0",
+    "@types/node": "^22.15.21",
+    "husky": "^9.1.7",
+    "npm-run-all2": "^8.0.3",
+    "prisma": "^6.8.2",
+    "prisma-markdown": "^2.0.0",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.16.0"
+  }
 }
