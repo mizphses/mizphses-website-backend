@@ -1,0 +1,317 @@
+openapi: 3.0.0
+info:
+  title: Mizphses Website Backend API
+  version: 1.0.0
+  description: Mizphses WebsiteのバックエンドAPI仕様書
+  contact:
+    name: Mizphses
+    email: mizphses@gmail.com
+    url: https://mizphses.com
+
+tags:
+  - name: auth
+    description: 認証関連のエンドポイント
+  - name: contents
+    description: コンテンツ関連のエンドポイント
+
+servers:
+  - url: /api
+    description: APIのベースURL
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Content:
+      type: object
+      properties:
+        title:
+          type: string
+          description: コンテンツのタイトル
+        text:
+          type: string
+          description: コンテンツの本文
+        description:
+          type: string
+          description: コンテンツの説明
+        ogpImageUrl:
+          type: string
+          description: OGP画像のURL
+        tags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              slug:
+                type: string
+        publishKeys:
+          type: array
+          items:
+            type: string
+
+    PublishKey:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 公開キーの名前
+
+    SignupRequest:
+      type: object
+      required:
+        - email
+        - password
+        - name
+      properties:
+        email:
+          type: string
+          format: email
+          description: ユーザーのメールアドレス
+        password:
+          type: string
+          format: password
+          description: ユーザーのパスワード
+        name:
+          type: string
+          description: ユーザーの名前
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: ユーザーのメールアドレス
+        password:
+          type: string
+          format: password
+          description: ユーザーのパスワード
+
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          description: リフレッシュトークン
+
+    Tokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: アクセストークン
+        refreshToken:
+          type: string
+          description: リフレッシュトークン
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: エラーメッセージ
+
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      operationId: signup
+      summary: 新規ユーザー登録
+      description: 新しいユーザーを登録し、アクセストークンとリフレッシュトークンを発行します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+      responses:
+        "200":
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tokens"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/login:
+    post:
+      tags:
+        - auth
+      operationId: login
+      summary: ユーザーログイン
+      description: 既存ユーザーのログインを行い、アクセストークンとリフレッシュトークンを発行します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tokens"
+        "500":
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      operationId: refreshToken
+      summary: トークンのリフレッシュ
+      description: リフレッシュトークンを使用して新しいアクセストークンを取得します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+      responses:
+        "200":
+          description: トークン更新成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tokens"
+        "401":
+          description: 無効なリフレッシュトークン
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /contents/new:
+    post:
+      tags:
+        - contents
+      operationId: createContent
+      summary: 新しいコンテンツを作成
+      description: 新しいコンテンツを作成します
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Content"
+      responses:
+        "200":
+          description: 作成されたコンテンツ
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+
+  /contents:
+    get:
+      tags:
+        - contents
+      operationId: getContents
+      summary: コンテンツ一覧を取得
+      description: すべてのコンテンツの一覧を取得します
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: コンテンツ一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Content"
+
+  /contents/apiKeys:
+    post:
+      tags:
+        - contents
+      operationId: createPublishKey
+      summary: 新しい公開キーを作成
+      description: 新しい公開キーを作成します
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublishKey"
+      responses:
+        "200":
+          description: 作成された公開キー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublishKey"
+    get:
+      tags:
+        - contents
+      operationId: getPublishKeys
+      summary: 公開キー一覧を取得
+      description: すべての公開キーの一覧を取得します
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: 公開キー一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PublishKey"
+
+  /contents/upload:
+    post:
+      tags:
+        - contents
+      operationId: uploadFile
+      summary: ファイルをアップロード
+      description: ファイルをアップロードし、そのキーを取得します
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: アップロードされたファイルのキー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
