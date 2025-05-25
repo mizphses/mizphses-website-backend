@@ -18,5 +18,11 @@
       "bucket_name": "mizphses-website-bucket",
       "binding": "BUCKET"
     }
+  ],
+  "routes": [
+    {
+      "pattern": "backend.commons.miz.cab",
+      "custom_domain": true
+    }
   ]
 }
