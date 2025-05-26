@@ -1,6 +1,6 @@
-import { createId } from '@paralleldrive/cuid2';
-import { PrismaD1 } from '@prisma/adapter-d1';
-import { PrismaClient } from '../generated/prisma/client';
+import { createId } from "@paralleldrive/cuid2";
+import { PrismaD1 } from "@prisma/adapter-d1";
+import { PrismaClient } from "../generated/prisma/client";
 
 export class PublishService {
   private prisma: PrismaClient;
@@ -29,5 +29,8 @@ export class PublishService {
     await this.prisma.apiKeys.delete({
       where: { id },
     });
+
+    const publishKey = await this.prisma.apiKeys.findMany();
+    return publishKey;
   }
 }

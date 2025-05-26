@@ -319,6 +319,37 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PublishKey"
+    delete:
+      tags:
+        - contents
+      operationId: deletePublishKey
+      summary: 公開キーを削除
+      description: 指定された公開キーを削除します
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keyId:
+                  type: string
+                  description: 削除する公開キーのID
+      responses:
+        "200":
+          description: 削除された公開キー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublishKey"
+        "404":
+          description: 公開キーが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /contents/upload:
     post:
