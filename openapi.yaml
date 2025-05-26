@@ -204,6 +204,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /auth/whoisme:
+    post:
+      tags:
+        - auth
+      operationId: whoisme
+      summary: 現在のユーザー情報を取得
+      description: 認証済みユーザーの情報を取得します
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: ユーザー情報取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: ユーザーID
+                  email:
+                    type: string
+                    format: email
+                    description: ユーザーのメールアドレス
+                  name:
+                    type: string
+                    description: ユーザーの名前
+        "401":
+          description: 認証エラー
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /contents/new:
     post:
       tags:
